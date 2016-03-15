@@ -46,7 +46,7 @@ public class ChartActivity extends AppCompatActivity{
 
                 Log.e(MainApplication.TAG, "Failed to fetch Json" + error) ;
                 Snackbar snackbar = Snackbar
-                        .make(chartActivityLayout, "Welcome to AndroidHive", Snackbar.LENGTH_LONG);
+                        .make(chartActivityLayout, "Failed to fetch Json", Snackbar.LENGTH_LONG);
 
                 snackbar.show();
 
