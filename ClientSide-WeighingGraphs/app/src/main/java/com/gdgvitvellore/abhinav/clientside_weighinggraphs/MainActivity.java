@@ -36,6 +36,10 @@ public class MainActivity extends AppCompatActivity
     private int mYear;
     private int mMonth;
     private int mDay;
+    private int selectedDay;
+    private int selectedMonth;
+    private int selectedYear;
+
     private EditText txtDate;
     private Context context ;
     private DatePickerDialog dpd ;
@@ -52,13 +56,16 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        txtDate=(EditText)findViewById(R.id.editText);
+
         Spinner s1 = (Spinner) findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this, R.array.items, android.R.layout.simple_spinner_item);
 
 
-
+        Calendar c = Calendar.getInstance();
+        mYear = c.get(Calendar.YEAR);
+        mMonth = c.get(Calendar.MONTH);
+        mDay = c.get(Calendar.DAY_OF_MONTH);
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
@@ -69,8 +76,12 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 
+                selectedDay=dayOfMonth;
+                selectedMonth=monthOfYear;
+                selectedYear=year;
 
                 Toast.makeText(getApplicationContext(),"Date Set",Toast.LENGTH_SHORT).show();
+
             }
         }, mYear, mMonth, mDay);
 
@@ -79,13 +90,11 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                final Calendar c = Calendar.getInstance();
-                mYear = c.get(Calendar.YEAR);
-                mMonth = c.get(Calendar.MONTH);
-                mDay = c.get(Calendar.DAY_OF_MONTH);
+
 
                 if(position!=0)
                 dpd.show();
+
 
               //
 
