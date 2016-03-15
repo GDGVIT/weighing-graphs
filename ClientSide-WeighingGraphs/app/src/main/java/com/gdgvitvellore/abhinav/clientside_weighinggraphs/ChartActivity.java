@@ -38,6 +38,7 @@ public class ChartActivity extends AppCompatActivity{
                     @Override
                     public void onResponse(JSONArray response) {
 
+                        handleResponseData(response) ;
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -53,6 +54,11 @@ public class ChartActivity extends AppCompatActivity{
         });
 
         VolleySingleton.getInstance().addToRequestQueue(jsonArrayRequest);
+
+    }
+
+    private void handleResponseData(JSONArray response) {
+
 
     }
 
