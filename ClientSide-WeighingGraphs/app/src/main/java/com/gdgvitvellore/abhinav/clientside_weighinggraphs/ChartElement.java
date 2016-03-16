@@ -1,29 +1,53 @@
 package com.gdgvitvellore.abhinav.clientside_weighinggraphs;
 
 
-public class ChartElements {
+import java.util.List;
+
+public class ChartElement {
+
+    private List<ChartElement> chartElements ;
+
+    public List<ChartElement> getChartElements() {
+        return chartElements;
+    }
+
+    public void setChartElements(List<ChartElement> chartElements) {
+        this.chartElements = chartElements;
+    }
+
     private String temperature ;
     private String airQuality ;
     private String weight ;
     private String date ;
     private String time ;
 
-    public ChartElements() {
+    public ChartElement() {
     }
 
-    public ChartElements(String temperature, String airQuality, String weight, String date, String time) {
+    public ChartElement(List<ChartElement> chartElements, String airQuality, String weight, String time) {
+        this.chartElements = chartElements;
+        this.airQuality = airQuality;
+        this.weight = weight;
+        ExtractDateTime(time);
+    }
+
+    public ChartElement(String temperature, String airQuality, String weight, String date) {
         this.temperature = temperature;
         this.airQuality = airQuality;
         this.weight = weight;
-        this.date = date;
-        this.time = time;
+        ExtractDateTime(time);
     }
 
-    public ChartElements(String weight, String date, String time) {
+    public ChartElement(String weight, String time) {
         this.weight = weight;
-        this.date = date;
-        this.time = time;
+        ExtractDateTime(time);
     }
+
+    private void ExtractDateTime(String time){
+        setDate(time.substring(0,10));
+        setTime(time.substring(12));
+    }
+
 
     public String getTemperature() {
         return temperature;

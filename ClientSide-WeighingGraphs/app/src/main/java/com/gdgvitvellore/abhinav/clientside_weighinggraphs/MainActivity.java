@@ -30,17 +30,7 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
-    private DatePickerDialog datePickerDialog;
 
-    private SimpleDateFormat dateFormatter;
-    private int mYear;
-    private int mMonth;
-    private int mDay;
-    private int selectedDay;
-    private int selectedMonth;
-    private int selectedYear;
-
-    private EditText txtDate;
     private Context context = MainApplication.getAppContext() ;
     private DatePickerDialog dpd ;
     private Spinner spinner ;
@@ -48,8 +38,6 @@ public class MainActivity extends AppCompatActivity
     private Date date;
     private Date month;
     private Date year;
-
-    private Intent intent = new Intent(context, ChartActivity.class)  ;
 
     private DrawerLayout drawer ;
     private Toolbar toolbar ;
@@ -63,7 +51,6 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         initializations() ;
-        initSpinner() ;
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -75,65 +62,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initializations() {
-
-        txtDate = (EditText)findViewById(R.id.editText);
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        spinner = (Spinner) findViewById(R.id.spinner);
     }
 
-    private void initSpinner() {
-
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this, R.array.items, android.R.layout.simple_spinner_item);
-
-
-        Calendar c = Calendar.getInstance();
-        mYear = c.get(Calendar.YEAR);
-        mMonth = c.get(Calendar.MONTH);
-        mDay = c.get(Calendar.DAY_OF_MONTH);
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-
-        dpd = new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-
-                selectedDay=dayOfMonth;
-                selectedMonth=monthOfYear;
-                selectedYear=year;
-
-                Toast.makeText(getApplicationContext(),"Date Set",Toast.LENGTH_SHORT).show();
-
-            }
-        }, mYear, mMonth, mDay);
-
-
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                final Calendar c = Calendar.getInstance();
-                mYear = c.get(Calendar.YEAR);
-                mMonth = c.get(Calendar.MONTH);
-                mDay = c.get(Calendar.DAY_OF_MONTH);
-
-                if(position!=0)
-                dpd.show();
-
-
-              //
-
-                    dpd.show();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-    }
 
     @Override
     public void onBackPressed() {
@@ -171,32 +102,39 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
 
-        android.app.Fragment fragment = new ChartActivity() ;
+        android.app.Fragment fragment ;
         Bundle args = new Bundle();
 
         switch (item.getItemId()){
             case R.id.nav_airquality:
                 toolbar.setTitle(R.string.airquality);
                 args.putString("Type", "airquality");
+                fragment = new ChartFragment() ;
                 break;
             case R.id.nav_weight:
                 toolbar.setTitle(R.string.weight);
                 args.putString("Type", "weight");
+                fragment = new ChartFragment() ;
                 break;
             case R.id.nav_temperature:
                 toolbar.setTitle(R.string.temperature);
                 args.putString("Type", "temperature");
+                fragment = new ChartFragment() ;
+                break;
             case R.id.nav_set_time:
                 toolbar.setTitle(R.string.set_time);
+                fragment = new DateFragment() ;
                 break;
+            default:
+                fragment = new DateFragment() ;
         }
+
+        fragment.setArguments(args);
 
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.fragment_holder, fragment)
                 .commit();
-
-        fragment.setArguments(args);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
