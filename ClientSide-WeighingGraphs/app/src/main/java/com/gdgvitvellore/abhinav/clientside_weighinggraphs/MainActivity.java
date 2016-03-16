@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -29,10 +30,16 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
+    private DatePickerDialog datePickerDialog;
 
+    private SimpleDateFormat dateFormatter;
     private int mYear;
     private int mMonth;
     private int mDay;
+    private int selectedDay;
+    private int selectedMonth;
+    private int selectedYear;
+
     private EditText txtDate;
     private Context context = MainApplication.getAppContext() ;
     private DatePickerDialog dpd ;
@@ -50,7 +57,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -81,6 +87,12 @@ public class MainActivity extends AppCompatActivity
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this, R.array.items, android.R.layout.simple_spinner_item);
 
+
+        Calendar c = Calendar.getInstance();
+        mYear = c.get(Calendar.YEAR);
+        mMonth = c.get(Calendar.MONTH);
+        mDay = c.get(Calendar.DAY_OF_MONTH);
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
@@ -88,7 +100,13 @@ public class MainActivity extends AppCompatActivity
         dpd = new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+
+                selectedDay=dayOfMonth;
+                selectedMonth=monthOfYear;
+                selectedYear=year;
+
                 Toast.makeText(getApplicationContext(),"Date Set",Toast.LENGTH_SHORT).show();
+
             }
         }, mYear, mMonth, mDay);
 
@@ -103,6 +121,11 @@ public class MainActivity extends AppCompatActivity
                 mDay = c.get(Calendar.DAY_OF_MONTH);
 
                 if(position!=0)
+                dpd.show();
+
+
+              //
+
                     dpd.show();
             }
 
