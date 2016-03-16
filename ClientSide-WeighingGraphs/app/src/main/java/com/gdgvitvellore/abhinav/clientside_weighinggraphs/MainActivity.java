@@ -1,8 +1,11 @@
 package com.gdgvitvellore.abhinav.clientside_weighinggraphs;
 
 import android.app.DatePickerDialog;
+import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,7 +19,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -27,52 +29,71 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
-    private DatePickerDialog datePickerDialog;
 
-    private SimpleDateFormat dateFormatter;
     private int mYear;
     private int mMonth;
     private int mDay;
     private EditText txtDate;
-    private Context context ;
+    private Context context = MainApplication.getAppContext() ;
     private DatePickerDialog dpd ;
+    private Spinner spinner ;
 
     private Date date;
     private Date month;
     private Date year;
 
+    private Intent intent = new Intent(context, ChartActivity.class)  ;
+
+    private DrawerLayout drawer ;
+    private Toolbar toolbar ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        context = getApplicationContext() ;
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setContentView(R.layout.activity_main);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        txtDate=(EditText)findViewById(R.id.editText);
-        Spinner s1 = (Spinner) findViewById(R.id.spinner);
+
+        initializations() ;
+        initSpinner() ;
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void initializations() {
+
+        txtDate = (EditText)findViewById(R.id.editText);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        spinner = (Spinner) findViewById(R.id.spinner);
+    }
+
+    private void initSpinner() {
+
+
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this, R.array.items, android.R.layout.simple_spinner_item);
 
-
-
-
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        s1.setAdapter(adapter);
+        spinner.setAdapter(adapter);
 
 
         dpd = new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-
-
                 Toast.makeText(getApplicationContext(),"Date Set",Toast.LENGTH_SHORT).show();
             }
         }, mYear, mMonth, mDay);
 
 
-        s1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
@@ -82,31 +103,13 @@ public class MainActivity extends AppCompatActivity
                 mDay = c.get(Calendar.DAY_OF_MONTH);
 
                 if(position!=0)
-                dpd.show();
-
-              //
-
+                    dpd.show();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
-
-
             }
         });
-
-
-//fragmentContainer.addView(TestFragment);
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
@@ -144,18 +147,33 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
 
-        if (id == R.id.nav_airquality) {
-            // Handle the camera action
-        } else if (id == R.id.nav_weight) {
+        android.app.Fragment fragment = new ChartActivity() ;
+        Bundle args = new Bundle();
 
-        } else if (id == R.id.nav_temperature) {
-
-        } else if (id == R.id.nav_set_time) {
-
+        switch (item.getItemId()){
+            case R.id.nav_airquality:
+                toolbar.setTitle(R.string.airquality);
+                args.putString("Type", "airquality");
+                break;
+            case R.id.nav_weight:
+                toolbar.setTitle(R.string.weight);
+                args.putString("Type", "weight");
+                break;
+            case R.id.nav_temperature:
+                toolbar.setTitle(R.string.temperature);
+                args.putString("Type", "temperature");
+            case R.id.nav_set_time:
+                toolbar.setTitle(R.string.set_time);
+                break;
         }
+
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment_holder, fragment)
+                .commit();
+
+        fragment.setArguments(args);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
