@@ -3,7 +3,10 @@ package com.gdgvitvellore.abhinav.clientside_weighinggraphs;
 
 import android.app.DatePickerDialog;
 import android.app.Fragment;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +19,7 @@ import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.logging.LogManager;
 
 public class DateFragment  extends Fragment{
 
@@ -29,8 +33,10 @@ public class DateFragment  extends Fragment{
     private int selectedMonth;
     private int selectedYear;
 
-
     private Spinner spinner ;
+
+    private SharedPreferences sharedPreferences ;
+
 
     @Nullable
     @Override
@@ -50,43 +56,39 @@ public class DateFragment  extends Fragment{
     private void init(View view) {
 
         spinner = (Spinner) view.findViewById(R.id.spinner);
+        sharedPreferences = getActivity().getSharedPreferences("DateData", Context.MODE_PRIVATE) ;
     }
 
     private void initSpinner() {
 
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                MainApplication.getAppContext(), R.array.items, android.R.layout.simple_spinner_item);
+                getActivity(), R.array.items, android.R.layout.simple_spinner_item);
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-
-
-        datePickerDialog = new DatePickerDialog(MainApplication.getAppContext(), new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-
-                selectedDay=dayOfMonth;
-                selectedMonth=monthOfYear;
-                selectedYear=year;
-
-                Toast.makeText(MainApplication.getAppContext(),"Date Set",Toast.LENGTH_SHORT).show();
-
-            }
-        }, mYear, mMonth, mDay);
-
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
                 final Calendar c = Calendar.getInstance();
+
                 mYear = c.get(Calendar.YEAR);
                 mMonth = c.get(Calendar.MONTH);
                 mDay = c.get(Calendar.DAY_OF_MONTH);
 
-                if(position!=0)
-                    datePickerDialog.show();
+                if(position!=0){
+                    showPopup();
+
+                }
+
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt("type", position);
+                editor.putInt("selectedDay", selectedDay) ;
+                editor.putInt("selectedMonth", selectedMonth) ;
+                editor.commit();
+
             }
 
             @Override
@@ -94,4 +96,23 @@ public class DateFragment  extends Fragment{
             }
         });
     }
+
+    private void showPopup() {
+
+
+        datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+
+                selectedDay = dayOfMonth;
+                selectedMonth = monthOfYear;
+                selectedYear = year;
+
+                Toast.makeText(getActivity(),"Date Set",Toast.LENGTH_SHORT).show();
+
+            }
+        }, mYear, mMonth, mDay);
+        datePickerDialog.show();
+    }
+
 }

@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout
-    android:id="@+id/swipeRefresh"
-    android:layout_height="wrap_content"
-    android:layout_width="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <GridLayout
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/activity_chart_relative">
 
-    <TextView
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:text="hello"
-        />
 
-    </GridLayout>
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
 
+        <org.eazegraph.lib.charts.ValueLineChart
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/cubiclinechart"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            app:egUseCubic="true"
+            app:egUseOverlapFill="true"
+            app:egCurveSmoothness="0.4"
+            app:egLegendHeight="40dp" />
 </android.support.v4.widget.SwipeRefreshLayout>
 
+    </LinearLayout>
 
 
 

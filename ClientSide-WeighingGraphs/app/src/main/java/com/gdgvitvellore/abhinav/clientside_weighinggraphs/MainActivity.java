@@ -30,15 +30,6 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
-
-    private Context context = MainApplication.getAppContext() ;
-    private DatePickerDialog dpd ;
-    private Spinner spinner ;
-
-    private Date date;
-    private Date month;
-    private Date year;
-
     private DrawerLayout drawer ;
     private Toolbar toolbar ;
 
