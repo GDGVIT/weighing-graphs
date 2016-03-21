@@ -31,23 +31,6 @@ public class ChartElementsList {
         public ChartElement() {
         }
 
-        public ChartElement(String temperature, String airQuality, String weight, String date) {
-            this.temperature = temperature;
-            this.airQuality = airQuality;
-            this.weight = weight;
-            ExtractDateTime(time);
-        }
-
-        public ChartElement(String airQuality, String time) {
-            this.airQuality = airQuality;
-            ExtractDateTime(time);
-        }
-
-        private void ExtractDateTime(String time) {
-            setDate(time.substring(0, 10));
-            setTime(time.substring(12));
-        }
-
 
         public String getTemperature() {
             return temperature;

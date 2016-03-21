@@ -1,15 +1,13 @@
 package com.gdgvitvellore.abhinav.clientside_weighinggraphs;
 
 import android.app.Application;
+import android.text.TextUtils;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
-import android.text.TextUtils;
-
 
 public class AppController extends Application {
-
 
     public static final String TAG = AppController.class.getSimpleName();
 
@@ -22,7 +20,6 @@ public class AppController extends Application {
         super.onCreate();
         mInstance = this;
     }
-
 
     public static synchronized AppController getInstance() {
         return mInstance;

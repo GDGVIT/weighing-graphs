@@ -11,8 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
@@ -26,6 +28,7 @@ import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.logging.LogManager;
 
 import in.srain.cube.views.ptr.PtrFrameLayout;
 
@@ -43,7 +46,7 @@ public class ChartFragment extends android.app.Fragment{
         private Integer dateConstraint ;
         private Integer iterationValue = 1 ;
 
-    private ChartElementsList chartElementsList = new ChartElementsList() ;
+    private ChartElementsList chartElementsList ;
 
 
     private ValueLineSeries series ;
@@ -68,6 +71,8 @@ public class ChartFragment extends android.app.Fragment{
         super.onViewCreated(view, savedInstanceState);
         getTimeConfig() ;
         fetchData() ;
+        initChart(view);
+      //  setDataInChart();
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -84,7 +89,7 @@ public class ChartFragment extends android.app.Fragment{
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(TAG, "onResponse() called with: " + "response = [" + response + "]");
+                        Log.v("res ok", response);
                         handleResponseData(response) ;
                     }
                 }, new Response.ErrorListener() {
@@ -97,13 +102,18 @@ public class ChartFragment extends android.app.Fragment{
                 snackbar.show();
             }
         });
-
+        int socketTimeout = 30000000;
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        stringRequest.setRetryPolicy(policy);
         AppController.getInstance().addToRequestQueue(stringRequest);
+
 
     }
 
 
     private void getTimeConfig() {
+
+        Log.d(TAG, "getTimeConfig() called with: " + "");
 
         /**
         * Write code to set params for different constraints - startParams, stopParams, iterationValue
@@ -112,11 +122,11 @@ public class ChartFragment extends android.app.Fragment{
 
         Calendar calendar = Calendar.getInstance();
 
-        SharedPreferences sharedPreferences=getActivity().getSharedPreferences("DateData",Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("DateData",Context.MODE_PRIVATE);
 
-        int type = sharedPreferences.getInt("Type", 2) ;
-        int getDate = sharedPreferences.getInt("DateSelected", calendar.get(Calendar.DATE)) ;
-        int getMonth = sharedPreferences.getInt("MonthSelected", calendar.get(Calendar.MONTH)) ;
+        int type = sharedPreferences.getInt("type", 2) ;
+        int getDate = sharedPreferences.getInt("selectedDay", calendar.get(Calendar.DATE)) ;
+        int getMonth = sharedPreferences.getInt("selectedMonth", calendar.get(Calendar.MONTH)) ;
 
         switch (type){
             case 0:
@@ -140,54 +150,80 @@ public class ChartFragment extends android.app.Fragment{
                 break;
         }
 
-
-
+        Log.d(TAG, "getTimeConfig() called with: " + getDate + " " + typeString + " " +
+                startParam + " " + stopParam + " " + iterationValue);
 
     }
 
     private void setDataInChart() {
 
+        Log.d(TAG, "setDataInChart() called with: " + "");
 
-        for(Integer i = startParam ; i<stopParam ; i+= iterationValue){
-            for(ChartElementsList.ChartElement temp: chartElementsList.getChartElements()){
 
-                String tempDate = temp.getDate() ;
-                String tempTime = temp.getTime() ;
+        for (int i = 0 ; i< chartElementsList.getChartElements().size() ; i++){
 
-                tempTime.substring(11,12) ;
-                tempDate.substring(8,9) ;
+            AddPointToChart(chartElementsList.getChartElements().get(i).getWeight(),
+                    Integer.parseInt(chartElementsList.getChartElements().get(i).getTime())) ;
+
+
+            Log.d(TAG, "INSIDE called with: " +
+                    chartElementsList.getChartElements().get(i).getAirQuality() + " " +
+                    chartElementsList.getChartElements().get(i).getDate() + " " +
+                    chartElementsList.getChartElements().get(i).getWeight() + " " +
+                    chartElementsList.getChartElements().get(i).getTime() );
+        }
+
+
+
+        /*for(int i = startParam ; i<stopParam ; i+= iterationValue){
+            if (chartElementsList.getChartElements() == null){
+                Log.d(TAG, "DAMN ITS NULL!!"  ) ;
+                Log.d(TAG, "SIZE IS" + chartElementsList.getChartElements().size());
+            }
+            for(int j = 0 ; j< chartElementsList.getChartElements().size() ; j++){
+
+                int varDate = Integer.parseInt(chartElementsList.getChartElements().get(i).getDate() );
 
 
                 switch (typeString){
                     case "hourly":
-                        if(tempDate == dateConstraint.toString()){
+                    *//*    if(tempDate == dateConstraint.toString()){
                             if(Integer.parseInt(temp.getTime()) >= i
                                     && Integer.parseInt(temp.getTime()) < (i + iterationValue)) ;
 
                             AddPointToChart(temp.getAirQuality(), Integer.parseInt(tempTime)) ;
-                        }
+                        }*//*
                         break;
                     case "daily":
-                        if(Integer.parseInt(tempDate) >= i  &&
+
+                        if(varDate == i)
+
+                        *//*if(Integer.parseInt(tempDate) >= i  &&
                                 Integer.parseInt(tempDate) < i + iterationValue) {
+                            Log.d(TAG, "setDataInChart() called with: " +
+                                    temp.getAirQuality() + " " + Integer.parseInt(tempDate));
 
                             AddPointToChart(temp.getAirQuality(), Integer.parseInt(tempDate));
 
-                        }
+                        }*//*
                         break;
                     case "weekly":
                         break;
 
 
                 }
+
             }
-        }
+
+        }*/
 
         buildChart() ;
 
     }
 
     private void initChart(View view) {
+
+        Log.d(TAG, "initChart() called with: " + "view = [" + view + "]");
 
         mCubicValueLineChart = (ValueLineChart) view.findViewById(R.id.cubiclinechart);
 
@@ -201,6 +237,8 @@ public class ChartFragment extends android.app.Fragment{
     }
 
     private void buildChart() {
+
+        Log.d(TAG, "buildChart() called with: " + "");
         mCubicValueLineChart.addSeries(series);
         mCubicValueLineChart.startAnimation();
     }
@@ -217,21 +255,31 @@ public class ChartFragment extends android.app.Fragment{
 
             Gson gson = new Gson() ;
 
-            ChartElementsList elementsList = gson.fromJson(response, ChartElementsList.class);
+            chartElementsList  = gson.fromJson(response, ChartElementsList.class);
 
-            for (int i = 0 ; i< elementsList.getChartElements().size() ; i++){
 
-                Log.d(TAG, "handleResponseData: " + elementsList.getChartElements().get(i).getAirQuality());
-                Log.d(TAG, "handleResponseData: " + elementsList.getChartElements().get(i).getDate());
-                Log.d(TAG, "handleResponseData: " + elementsList.getChartElements().get(i).getTime());
-                Log.d(TAG, "handleResponseData: " + elementsList.getChartElements().get(i).getWeight());
+
+
+            for (int i = 0 ; i< chartElementsList.getChartElements().size() ; i++){
+
+                Log.d(TAG, "RESPONSES called with: " +
+                        chartElementsList.getChartElements().get(i).getAirQuality() + " " +
+                        chartElementsList.getChartElements().get(i).getDate() + " " +
+                        chartElementsList.getChartElements().get(i).getWeight() + " " +
+                        chartElementsList.getChartElements().get(i).getTime() );
+
+                ExtractDateTime(i, chartElementsList.getChartElements().get(i).getTime());
             }
 
-            Log.d("TEST", "DATA" + elementsList) ;
+            Log.d("TEST", "DATA" + chartElementsList) ;
 
+            setDataInChart();
 
+    }
 
-
+    private void ExtractDateTime(int i, String time) {
+        chartElementsList.getChartElements().get(i).setDate(time.substring(0, 10).substring(8,10));
+        chartElementsList.getChartElements().get(i).setTime(time.substring(12).substring(0,1));
     }
 
 

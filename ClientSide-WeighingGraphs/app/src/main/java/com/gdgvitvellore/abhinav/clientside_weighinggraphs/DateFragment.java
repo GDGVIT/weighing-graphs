@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,15 +80,11 @@ public class DateFragment  extends Fragment{
                 mDay = c.get(Calendar.DAY_OF_MONTH);
 
                 if(position!=0){
-                    showPopup();
+                    showPopup(position);
 
                 }
 
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt("type", position);
-                editor.putInt("selectedDay", selectedDay) ;
-                editor.putInt("selectedMonth", selectedMonth) ;
-                editor.commit();
+
 
             }
 
@@ -97,7 +94,7 @@ public class DateFragment  extends Fragment{
         });
     }
 
-    private void showPopup() {
+    private void showPopup(final int position) {
 
 
         datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
@@ -109,6 +106,16 @@ public class DateFragment  extends Fragment{
                 selectedYear = year;
 
                 Toast.makeText(getActivity(),"Date Set",Toast.LENGTH_SHORT).show();
+
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt("type", position);
+                editor.putInt("selectedDay", selectedDay) ;
+                editor.putInt("selectedMonth", selectedMonth) ;
+                editor.commit();
+
+                Log.d("SHARED PREFERENCES", "type: " + position + " selectedDay: " + selectedDay
+                        + " selectedMonth: " + selectedMonth) ;
+
 
             }
         }, mYear, mMonth, mDay);
