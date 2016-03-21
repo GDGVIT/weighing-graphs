@@ -7,3 +7,5 @@ An android application that fetches real time data from weighing scale and visua
 
 Android:
 1. Visualize the data from the api, and visualize it in graphs.
+
+- Link to GET data: http://gdgvit.cloudapp.net:5000/show
